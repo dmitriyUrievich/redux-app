@@ -25,6 +25,13 @@ const taskSlice = createSlice({
         (el) => el.id !== action.payload.id
       );
     },
+    add(state, action) {
+      state.entities.push({
+        id: "" + action.payload.id + "_" + Date.now(),
+        title: action.payload.title,
+        completed: action.payload.completed,
+      });
+    },
     taskRequested(state) {
       state.isLoading = true;
     },
@@ -34,7 +41,7 @@ const taskSlice = createSlice({
   },
 });
 const { actions, reducer: taskReducer } = taskSlice;
-const { update, remove, recived, taskRequested, taskRequestFailed } = actions;
+const { update, remove,add, recived, taskRequested, taskRequestFailed } = actions;
 
 export const loadTasks = () => async (dispatch) => {
   dispatch(taskRequested());
@@ -43,6 +50,16 @@ export const loadTasks = () => async (dispatch) => {
     dispatch(recived(data));
   } catch (error) {
     console.log('ошибка загрузки')
+    dispatch(taskRequestFailed());
+    dispatch(setError(error.message));
+  }
+};
+
+export const taskCreate = (title, completed) => async (dispatch) => {
+  try {
+    const data = await todosService.create({ title, completed });
+    dispatch(add(data));
+  } catch (error) {
     dispatch(taskRequestFailed());
     dispatch(setError(error.message));
   }

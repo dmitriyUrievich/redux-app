@@ -10,5 +10,9 @@ const todosService = {
     });
     return data;
   },
+  create: async (todo) => {
+    const { data } = await httpService.post(todosEndepoint, todo);
+    return data;
+  },
 };
 export default todosService;
